@@ -1,0 +1,21 @@
+{
+  "name": "aStar",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "ant-design-vue": "^2.1.2",
+    "lodash": "^4.17.21",
+    "typescript": "^4.3.5",
+    "vue": "3.0.11",
+    "vue-router": "4.0.6"
+  },
+  "devDependencies": {
+    "@vue/compiler-sfc": "^3.0.4",
+    "less": "^4.1.1",
+    "less-loader": "^10.0.1",
+    "vite": "^1.0.0-rc.13"
+  }
+}

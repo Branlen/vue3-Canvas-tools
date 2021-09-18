@@ -1,0 +1,17 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "gz-cynosdbmysql-grp-hvjgq2pd.sql.tencentcdb.com",
+            "port": 28590,
+            "driver": "MySQL",
+            "username": "root",
+            "password": "hwb1274641+",
+            "database": "course_tool",
+            "name": "course_tool"
+        }
+    ]
+}
