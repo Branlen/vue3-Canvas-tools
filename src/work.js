@@ -77,7 +77,7 @@ export function exportExcel(
     SheetNames: [sheetName],
     Sheets,
   };
-  save(wb, `纯脉快递${new Date().getMonth()+1}-${new Date().getDay()}.xlsx`);
+  save(wb, `纯脉快递${new Date().getMonth()+1}-${new Date().getDate()}.xlsx`);
 }
 
 function setTableThead(wb) {
