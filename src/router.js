@@ -1,20 +1,29 @@
-import { createRouter, createWebHashHistory, createWebHistory } from "vue-router";
+import {
+  createRouter,
+  createWebHashHistory,
+  createWebHistory,
+} from "vue-router";
 import Options from "../src/components/Options.vue";
 import NodeXlsx from "../src/components/node-xlsx.vue";
 import BasicGraphic from "./VIEW/basicGraphic.vue";
-import ImgDraw from './VIEW/imgDraw.vue';
+import ImgDraw from "./VIEW/imgDraw.vue";
+import Courier from "./VIEW/Courier.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     { path: "/", component: Options },
     {
+      path: "/courier",
+      component: Courier,
+    },
+    {
       path: "/astar",
       component: Options,
-      children:{
+      children: {
         path: "/astar",
         component: Options,
-      }
+      },
     },
     {
       path: "/node-xlsx",
@@ -28,7 +37,6 @@ const router = createRouter({
       path: "/imgDraw",
       component: ImgDraw,
     },
-    
   ],
 });
 

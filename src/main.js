@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import Antd from 'ant-design-vue';
 import './index.css'
 import router from './router'
 
@@ -12,3 +13,5 @@ app.use(router)
 
 // 挂载运行
 app.mount('#app')
+
+app.use(Antd);

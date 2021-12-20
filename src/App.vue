@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <div class="top">
+    <!-- <div class="top" >
       <Menu v-model="current" mode="horizontal">
         <MenuItem key="nodeXlsx">
         <RouterLink to="/node-xlsx">
@@ -24,7 +24,7 @@
         </MenuItem>
       </Menu>
 
-    </div>
+    </div> -->
     <RouterView />
   </div>
 
