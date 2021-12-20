@@ -32,7 +32,7 @@ export default {
       offsetY: 0,
       active: false,
     });
-    const angleValue = ref(90); // 旋转度数
+    const angleValue = ref(0); // 旋转度数
     const angleInfo = ref({
       active: false,
       angle: angleValue.value,
@@ -71,9 +71,28 @@ export default {
         console.log("moved");
         //TODO 记录位置在图片偏移量，而不是对半
       }
-      const adjustPointInRadius = (x: number, y: number) =>
-        offsetY < y + cicreRadius && offsetY > +y - cicreRadius && offsetX < x + cicreRadius && offsetX > +x - cicreRadius;
+      const adjustPointInRadius = (x: number, y: number) => {
+        const rotateBeforPoint = getEndPointByRotate(
+          [offsetX, offsetY],
+          [centerPoint.value.x, centerPoint.value.y],
+          (-angleValue.value * Math.PI) / 180
+        );
+        console.log("center", centerPoint.value, "offset", offsetX, offsetY, "beforePoint", rotateBeforPoint, "angle", angleValue.value, posX.value,posY.value);
+        return (
+          rotateBeforPoint[1] < y + cicreRadius &&
+          rotateBeforPoint[1] > +y - cicreRadius &&
+          rotateBeforPoint[0] < x + cicreRadius &&
+          rotateBeforPoint[0] > +x - cicreRadius
+        );
+      };
       // 判断需要增加判断点的旋转后的位置通过向量来计算，通过一个已知向量和一个未知向量的已知夹角计算，并且向量值是一样的???
+      const getEndPointByRotate = (startPoint: [number, number], centerPoint: [number, number], angle: number) => {
+        const [centerX, centerY] = centerPoint;
+        const [x1, y1] = [startPoint[0] - centerX, startPoint[1] - centerY];
+        const x2 = x1 * Math.cos(angle) - y1 * Math.sin(angle);
+        const y2 = x1 * Math.sin(angle) + y1 * Math.cos(angle);
+        return [x2 + centerX, y2 + centerY];
+      };
       // 判断是否点击到八个坐标
       for (let i = 0; i < xPos.value.length; i++) {
         if (adjustPointInRadius(xPos.value[i], yPos.value[i])) {
@@ -116,22 +135,14 @@ export default {
         const offsetMount = Math.max(Math.abs(clickPointOffsetX - offsetX), Math.abs(clickPointOffsetY - offsetY)); // 最大偏移量
         // NOTE 比较不是中心点，应该是更远的点，还需要判断他是从那个位置开始，所以需要加入每个位置中
         const isInner = inRange(centerPoint.value.x, clickPointOffsetX, offsetX) || inRange(centerPoint.value.y, clickPointOffsetY, offsetY); //朝内
-        console.log(offsetY, clickPointOffsetY);
-        console.log(offsetMount);
+        // console.log(offsetMount);
         console.log(isInner ? "朝内" : "朝外");
         switch (movePoint.value.index) {
           case 0: // left top
-            if (isInner) {
-              posX.value = drawX + offsetMount;
-              posY.value = drawY + offsetMount;
-              imgWidth.value = drawWidth - offsetMount;
-              imgHeight.value = drawHeight - offsetMount;
-            } else {
-              posX.value = drawX - offsetMount;
-              posY.value = drawY - offsetMount;
-              imgWidth.value = drawWidth + offsetMount;
-              imgHeight.value = drawHeight + offsetMount;
-            }
+            posX.value = drawX + (isInner ? offsetMount : -offsetMount);
+            posY.value = drawY + (isInner ? offsetMount : -offsetMount);
+            imgWidth.value = drawWidth + (isInner ? -offsetMount : offsetMount);
+            imgHeight.value = drawHeight + (isInner ? -offsetMount : offsetMount);
             break;
           case 7: //right bottom
             imgWidth.value = drawWidth + (isInner ? -offsetMount : offsetMount);
@@ -176,30 +187,21 @@ export default {
     onMounted(async () => {
       const canvasHtml = canvaseRef.value! as HTMLCanvasElement;
       const ctx = canvasHtml.getContext("2d");
+      
       const imgObj = (await asyncLoadImg("src/assets/logo.png")) as HTMLImageElement;
       canvasHtml.width = 1000;
       canvasHtml.height = 800;
       canvasCtx.value = ctx;
+      ctx!.fillStyle = 'green';
+ctx?.fillRect(20, 10, 150, 100);
       imgObjInfo.value = imgObj;
       imgWidth.value = imgObj.width;
       imgHeight.value = imgObj.height;
       ctx?.drawImage(imgObj, posX.value, posY.value);
+      drawFourLine();
       canvasHtml.addEventListener("mousedown", mouseStart);
       canvasHtml.addEventListener("mouseup", moveEnd);
       canvasHtml.addEventListener("mousemove", throttle(move, 16, { leading: true, trailing: true }));
-      drawFourLine();
-
-      // setInterval(()=>{
-      //     angleValue.value=angleValue.value+1;
-      //      const centerX = posX.value + imgWidth.value / 2; // 实时更换中心点
-      // const centerY = posY.value + imgHeight.value / 2; // 实时更换中心点
-      // canvasCtx.value?.clearRect(0, 0, 1000, 800);
-      // canvasCtx.value?.translate(centerX, centerY);
-      // canvasCtx.value?.rotate((angleValue.value * Math.PI) / 180);
-      // canvasCtx.value?.translate(-centerX, -centerY);
-      // canvasCtx.value?.drawImage(imgObjInfo.value!, posX.value, posY.value, imgWidth.value, imgHeight.value);
-      // drawFourLine();
-      // },200)
     });
     const drawFourLine = () => {
       const ctx = canvasCtx.value as CanvasRenderingContext2D;
@@ -235,18 +237,23 @@ export default {
       ctx.stroke();
     };
     watch([posX, posY, imgWidth, imgHeight, angleValue], (now, prev) => {
-      console.log(now, prev);
+      //   console.log(now, prev);
 
       canvasCtx.value?.clearRect(0, 0, 1000, 800);
-      canvasCtx.value?.translate(centerPoint.value.x, centerPoint.value.y);
-      //这样是增量增加的，其实应该滚到初始位置，或者
-      canvasCtx.value?.rotate(((now[4] - prev[4]) * Math.PI) / 180);
-
-      canvasCtx.value?.translate(-centerPoint.value.x, -centerPoint.value.y);
+      canvasCtx.value!.fillStyle = 'green';
+canvasCtx.value?.fillRect(500, 400, 150, 100);
       canvasCtx.value?.drawImage(imgObjInfo.value!, now[0], now[1], now[2], now[3]);
       drawFourLine();
+      if(now[4] - prev[4]!==0){
+          canvasCtx.value?.translate(centerPoint.value.x, centerPoint.value.y);
+          //这样是增量增加的，其实应该滚到初始位置，或者
+          canvasCtx.value?.rotate(((now[4] - prev[4]) * Math.PI) / 180);
+    
+          canvasCtx.value?.translate(-centerPoint.value.x, -centerPoint.value.y);
+      }
     });
-    return { canvaseRef };
+  
+    return { canvaseRef,posX,posY,centerPoint,angleValue,imgWidth,imgHeight,xPos,yPos };
   },
 };
 </script>

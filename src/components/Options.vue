@@ -39,6 +39,7 @@ import { Button, Radio, Row, Col, Checkbox } from "ant-design-vue";
 import _ from "lodash";
 import {NodeTypeValue} from './util';
 const RadioGroup = Radio.Group;
+import {useRoute, useRouter} from 'vue-router';
 
 export default {
   name: "Options",
@@ -53,6 +54,8 @@ export default {
     Checkbox,
   },
   setup() {
+    console.log(useRoute().matched);
+    // const 
     const size = 40;
     const sizeWidth = 25;
     const AStarModel = ref("manhattan");

@@ -11,6 +11,10 @@ const router = createRouter({
     {
       path: "/astar",
       component: Options,
+      children:{
+        path: "/astar",
+        component: Options,
+      }
     },
     {
       path: "/node-xlsx",
